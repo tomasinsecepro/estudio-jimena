@@ -1,0 +1,10 @@
+services:
+  estudio-jimena:
+    build: .
+    container_name: estudio-jimena
+    restart: unless-stopped
+    ports:
+      - "3085:3085"
+    environment:
+      - PORT=3085
+      - NODE_ENV=production

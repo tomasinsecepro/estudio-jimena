@@ -1,0 +1,12 @@
+{
+  "name": "estudio-jimena",
+  "version": "1.0.0",
+  "description": "Estudio 3D Interactivo de Jimena - 5º de Primaria",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "jimp": "^1.6.1"
+  }
+}

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>El Cuaderno de Estudio de Jimena - 3D Interactivo</title>
+  <!-- Google Fonts: Quicksand & Nunito for friendly aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top App Navigation -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo">✨</div>
+      <div class="brand-text">
+        <h1>Estudio 3D <span class="badge-jimena">Jimena 5º</span></h1>
+        <p>Aprende jugando de forma interactiva</p>
+      </div>
+    </div>
+
+    <!-- Subjects Navigation Tabs -->
+    <nav class="subjects-nav">
+      <button class="tab-btn active" data-subject="ciencias">
+        <span>🔬</span> Conocimiento del Medio
+      </button>
+      <button class="tab-btn" data-subject="matematicas">
+        <span>📐</span> Matemáticas
+        <span class="tab-badge-future">Próximamente</span>
+      </button>
+      <button class="tab-btn" data-subject="lengua">
+        <span>📖</span> Lengua
+        <span class="tab-badge-future">Próximamente</span>
+      </button>
+      <button class="tab-btn" data-subject="ingles">
+        <span>🇬🇧</span> Inglés
+        <span class="tab-badge-future">Próximamente</span>
+      </button>
+      <button class="tab-btn" data-subject="medallas">
+        <span>🏆</span> Mis Medallas
+      </button>
+    </nav>
+
+    <!-- Header Actions & Score -->
+    <div class="header-actions">
+      <div class="jimena-profile">
+        <div class="avatar-jimena">👧</div>
+        <div class="profile-score">
+          <span>⭐</span> <span id="total-score">0</span> pts
+        </div>
+      </div>
+      <button id="btn-sound-toggle" class="btn-icon" title="Activar/Desactivar Sonido">🔊</button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- View: Conocimiento del Medio (3D Anatomy Studio) -->
+    <section id="view-ciencias" class="study-view active">
+      
+      <!-- Layer Sub-Navigation Bar -->
+      <div class="layer-subnav">
+        <div class="layer-chips">
+          <button class="layer-chip active" data-layer="persona">
+            <span>👧</span> El Cuerpo (Jimena 3D)
+            <span class="layer-counter" id="badge-count-persona">0/4</span>
+          </button>
+          <button class="layer-chip" data-layer="huesos">
+            <span>🦴</span> Huesos (Esqueleto)
+            <span class="layer-counter" id="badge-count-huesos">0/14</span>
+          </button>
+          <button class="layer-chip" data-layer="musculos_del">
+            <span>💪</span> Músculos Delanteros
+            <span class="layer-counter" id="badge-count-musculos_del">0/5</span>
+          </button>
+          <button class="layer-chip" data-layer="musculos_tras">
+            <span>🏃</span> Músculos Traseros
+            <span class="layer-counter" id="badge-count-musculos_tras">0/5</span>
+          </button>
+          <button class="layer-chip" data-layer="ojo">
+            <span>👁️</span> El Ojo
+            <span class="layer-counter" id="badge-count-ojo">0/7</span>
+          </button>
+          <button class="layer-chip" data-layer="oido">
+            <span>👂</span> El Oído
+            <span class="layer-counter" id="badge-count-oido">0/6</span>
+          </button>
+        </div>
+
+        <div class="layer-controls">
+          <div class="mode-toggle-group">
+            <button class="mode-toggle-btn active" id="btn-mode-quiz">✍️ Modo Escribir</button>
+            <button class="mode-toggle-btn" id="btn-mode-study">📖 Modo Estudiar</button>
+          </div>
+          <button class="btn-reset-layer" id="btn-reset-layer" title="Reiniciar el progreso de esta lámina a 0">
+            <span>🔄</span> Reiniciar a 0
+          </button>
+        </div>
+      </div>
+
+      <!-- 3D Interactive Stage -->
+      <div class="stage-wrapper" id="stage-wrapper">
+        <!-- 3D Model Loading Overlay -->
+        <div class="model-loading-overlay" id="loading-overlay">
+          <div class="spinner"></div>
+          <div class="loading-text" id="loading-text">Cargando modelos anatómicos 3D hiperrealistas...</div>
+          <div class="loading-subtext">Preparando el esqueleto y músculos de Jimena</div>
+        </div>
+
+        <!-- 3D Viewport Stage -->
+        <div class="stage-3d-viewport" id="stage-3d-viewport">
+          <!-- Three.js Canvas Container -->
+          <div id="three-canvas-container"></div>
+
+          <!-- SVG overlay for dynamic leader lines connecting 3D model to labels -->
+          <svg id="svg-overlay"></svg>
+
+          <!-- HTML Pins / Markers anchored in 3D -->
+          <div id="markers-layer"></div>
+
+          <!-- Quick 3D Navigation & Controls Toolbar -->
+          <div class="camera-toolbar">
+            <button class="cam-btn" id="btn-cam-rotate" title="Girar automáticamente">
+              <span>🔄</span> Girar 3D
+            </button>
+            <div class="cam-divider"></div>
+            <button class="cam-btn" id="btn-cam-front">👤 Frente</button>
+            <button class="cam-btn" id="btn-cam-back">🔄 Espalda</button>
+            <button class="cam-btn" id="btn-cam-reset">🎯 Centrar</button>
+            <div class="cam-divider"></div>
+            <button class="cam-btn" id="btn-cam-zoomin">➕</button>
+            <button class="cam-btn" id="btn-cam-zoomout">➖</button>
+          </div>
+
+          <!-- Interactive Helper Pill -->
+          <div class="instruction-pill">
+            <span>🖐️</span>
+            <span class="instruction-desktop">Arrastra para <span class="bold">girar 3D</span> | Rueda para <span class="bold">acercarte</span> | Pulsa en el cuerpo</span>
+            <span class="instruction-mobile">👆 <span class="bold">Gira en 3D</span> | ✌️ <span class="bold">Pellizca zoom</span> | Pulsa números</span>
+          </div>
+        </div>
+
+        <!-- Left and Right Input / Study Card Panels -->
+        <div class="label-panels-layer" id="label-panels-layer">
+          <div class="side-panel panel-left" id="panel-left"></div>
+          <div class="side-panel panel-right" id="panel-right"></div>
+        </div>
+
+        <!-- Success Toast Notification -->
+        <div class="toast-container" id="toast-container"></div>
+      </div>
+    </section>
+
+    <!-- Subject Placeholder: Matemáticas -->
+    <section id="view-matematicas" class="subject-page">
+      <div class="subject-hero">
+        <h2>📐 Matemáticas para 5º de Primaria</h2>
+        <p>¡Hola Jimena! Aquí prepararemos tus temas de números, problemas y retos geométricos.</p>
+      </div>
+      <div class="future-cards-grid">
+        <div class="future-topic-card">
+          <div class="future-topic-icon">🍕</div>
+          <h3>Fracciones Divertidas</h3>
+          <p>Aprende a sumar, restar y comparar partes de pizzas y figuras interactivas.</p>
+          <span class="future-status-pill">En preparación</span>
+        </div>
+        <div class="future-topic-card">
+          <div class="future-topic-icon">⚡</div>
+          <h3>Cálculo Rápido</h3>
+          <p>Multiplicaciones, divisiones de 2 cifras y trucos mentales.</p>
+          <span class="future-status-pill">En preparación</span>
+        </div>
+        <div class="future-topic-card">
+          <div class="future-topic-icon">📐</div>
+          <h3>Geometría y Figuras</h3>
+          <p>Triángulos, cuadriláteros, perímetros y áreas en 3D.</p>
+          <span class="future-status-pill">En preparación</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Subject Placeholder: Lengua -->
+    <section id="view-lengua" class="subject-page">
+      <div class="subject-hero">
+        <h2>📖 Lengua Española</h2>
+        <p>Acentuación, gramática, tipos de palabras y ortografía divertida para Jimena.</p>
+      </div>
+      <div class="future-cards-grid">
+        <div class="future-topic-card">
+          <div class="future-topic-icon">✍️</div>
+          <h3>Reglas de Acentuación</h3>
+          <p>Agudas, llanas y esdrújulas con juegos de atrapar tildes.</p>
+          <span class="future-status-pill">En preparación</span>
+        </div>
+        <div class="future-topic-card">
+          <div class="future-topic-icon">🏷️</div>
+          <h3>Tipos de Palabras</h3>
+          <p>Sustantivos, adjetivos, determinantes y pronombres.</p>
+          <span class="future-status-pill">En preparación</span>
+        </div>
+        <div class="future-topic-card">
+          <div class="future-topic-icon">⏳</div>
+          <h3>Tiempos Verbales</h3>
+          <p>Pasado, presente, futuro y formas no personales.</p>
+          <span class="future-status-pill">En preparación</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Subject Placeholder: Inglés -->
+    <section id="view-ingles" class="subject-page">
+      <div class="subject-hero">
+        <h2>🇬🇧 English Practice</h2>
+        <p>Vocabulary, body parts in English, listening and irregular verbs for Jimena.</p>
+      </div>
+      <div class="future-cards-grid">
+        <div class="future-topic-card">
+          <div class="future-topic-icon">🦴</div>
+          <h3>The Human Body in English</h3>
+          <p>Skull, ribs, spine, muscles and senses in English!</p>
+          <span class="future-status-pill">En preparación</span>
+        </div>
+        <div class="future-topic-card">
+          <div class="future-topic-icon">🚀</div>
+          <h3>Irregular Verbs Challenge</h3>
+          <p>Master the 3 forms of verbs with friendly audio pronunciation.</p>
+          <span class="future-status-pill">En preparación</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Subject: Medallas de Jimena -->
+    <section id="view-medallas" class="subject-page">
+      <div class="subject-hero">
+        <h2>🏆 Vitrina de Trofeos de Jimena</h2>
+        <p>¡Completa cada lámina para ganar todas las medallas de estudio!</p>
+      </div>
+      <div class="medals-grid">
+        <div class="medal-card" id="medal-huesos">
+          <div class="medal-icon">🦴</div>
+          <h4>Dra. del Esqueleto</h4>
+          <p>Identifica todos los huesos del cuerpo humano</p>
+        </div>
+        <div class="medal-card" id="medal-musculos_del">
+          <div class="medal-icon">💪</div>
+          <h4>Fuerza Delantera</h4>
+          <p>Domina los músculos frontales</p>
+        </div>
+        <div class="medal-card" id="medal-musculos_tras">
+          <div class="medal-icon">🏃</div>
+          <h4>Atleta Posterior</h4>
+          <p>Domina los músculos de la espalda y piernas</p>
+        </div>
+        <div class="medal-card" id="medal-ojo">
+          <div class="medal-icon">👁️</div>
+          <h4>Ojo de Lince</h4>
+          <p>Aprende todas las partes del sentido de la vista</p>
+        </div>
+        <div class="medal-card" id="medal-oido">
+          <div class="medal-icon">👂</div>
+          <h4>Oído Perfecto</h4>
+          <p>Conoce a fondo las 3 partes del oído y la audición</p>
+        </div>
+        <div class="medal-card" id="medal-master">
+          <div class="medal-icon">👑</div>
+          <h4>Gran Sabia de Ciencias</h4>
+          <p>Completa al 100% todo el temario del cuerpo humano</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Level Completed Celebration Modal -->
+  <div class="modal-overlay" id="celebration-modal">
+    <div class="celebration-box">
+      <div class="celebration-icon">🎉</div>
+      <h2 id="modal-title">¡Genial, Jimena!</h2>
+      <p id="modal-desc">Has completado todos los elementos de esta lámina con éxito. ¡Eres una campeona!</p>
+      <button class="btn-celebrate" id="btn-modal-close">¡Continuar Estudiando! 🚀</button>
+    </div>
+  </div>
+
+  <!-- Interactive Reset Modal (Elige qué reiniciar a 0) -->
+  <div class="modal-overlay" id="reset-modal">
+    <div class="reset-modal-box">
+      <div class="reset-modal-header">
+        <span class="reset-modal-icon">🔄</span>
+        <h3>¿Qué lámina quieres reiniciar a 0?</h3>
+        <p>Elige la sección que quieras borrar para volver a practicarla desde el principio:</p>
+      </div>
+      <div class="reset-options-list">
+        <button class="reset-opt-btn" data-reset="current">
+          <span class="opt-icon">📍</span>
+          <span class="opt-label" id="reset-opt-current-label">Lámina que estás viendo ahora</span>
+        </button>
+        <button class="reset-opt-btn" data-reset="persona">
+          <span class="opt-icon">👧</span>
+          <span class="opt-label">Jimena Real (Cuerpo 3D)</span>
+          <span class="opt-badge" id="reset-badge-persona">0/4</span>
+        </button>
+        <button class="reset-opt-btn" data-reset="huesos">
+          <span class="opt-icon">🦴</span>
+          <span class="opt-label">Huesos (Esqueleto)</span>
+          <span class="opt-badge" id="reset-badge-huesos">0/14</span>
+        </button>
+        <button class="reset-opt-btn" data-reset="musculos_del">
+          <span class="opt-icon">💪</span>
+          <span class="opt-label">Músculos Delanteros</span>
+          <span class="opt-badge" id="reset-badge-musculos_del">0/5</span>
+        </button>
+        <button class="reset-opt-btn" data-reset="musculos_tras">
+          <span class="opt-icon">🏃</span>
+          <span class="opt-label">Músculos Traseros</span>
+          <span class="opt-badge" id="reset-badge-musculos_tras">0/5</span>
+        </button>
+        <button class="reset-opt-btn" data-reset="ojo">
+          <span class="opt-icon">👁️</span>
+          <span class="opt-label">El Ojo</span>
+          <span class="opt-badge" id="reset-badge-ojo">0/7</span>
+        </button>
+        <button class="reset-opt-btn" data-reset="oido">
+          <span class="opt-icon">👂</span>
+          <span class="opt-label">El Oído</span>
+          <span class="opt-badge" id="reset-badge-oido">0/6</span>
+        </button>
+        <button class="reset-opt-btn danger" data-reset="all">
+          <span class="opt-icon">💥</span>
+          <span class="opt-label">Reiniciar TODO a 0 (Todo el cuaderno)</span>
+        </button>
+      </div>
+      <button class="btn-cancel-reset" id="btn-cancel-reset">Cancelar / Volver</button>
+    </div>
+  </div>
+
+  <!-- Local Libraries for Offline 3D & Confetti -->
+  <script src="libs/three.min.js"></script>
+  <script src="libs/OrbitControls.js"></script>
+  <script src="libs/GLTFLoader.js"></script>
+  <script src="libs/confetti.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
