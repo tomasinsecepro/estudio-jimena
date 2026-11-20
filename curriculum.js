@@ -1,150 +1,151 @@
 /**
  * ESTUDIO JIMENA 3D - MOTOR PEDAGÓGICO Y GAMIFICACIÓN (BESTKIDS ADAPTATION)
  * Asignaturas: Matemáticas, Lengua, Inglés y Sistema de Gamificación
+ * Nivel adaptado: 3º de Primaria (8 años)
  */
 
-// --- Base de Datos Curricular de 5º de Primaria ---
+// --- Base de Datos Curricular de 3º de Primaria (8 años) ---
 const CURRICULUM_DATA = {
   matematicas: {
     title: "Mundo de los Números",
     icon: "📐",
-    heroDesc: "¡Hola Jimena! Resuelve retos de cálculo, fracciones, geometría y problemas para subir de nivel.",
+    heroDesc: "¡Hola Jimena! Aprende jugando las tablas de multiplicar, retos de cálculo, el reloj y las figuras geométricas.",
     units: [
       {
         id: "mat_1",
-        title: "Cálculo y Operaciones Rápidas",
+        title: "Tablas de Multiplicar y Cálculo Rápido",
         icon: "⚡",
-        desc: "Sumas, multiplicaciones con ceros, repartos y división.",
+        desc: "Tablas del 2 al 9, sumas con llevadas y dobles.",
         questions: [
           {
             type: "multiple_choice",
-            question: "¿Cuánto es 340 + 280?",
-            options: ["620", "520", "610", "640"],
-            answer: "620",
-            explanation: "340 + 280 = 620. ¡Buen cálculo mental!"
+            question: "¿Cuánto es 7 × 8?",
+            options: ["56", "54", "48", "63"],
+            answer: "56",
+            explanation: "7 × 8 = 56. ¡Te sabes la tabla genial, Jimena!"
           },
           {
             type: "true_false",
-            question: "En la operación 45 × 100, el resultado es 4.500",
+            question: "El doble de 15 es 30.",
             answer: true,
-            explanation: "¡Correcto! Al multiplicar por 100 se añaden dos ceros a la derecha."
+            explanation: "¡Correcto! 15 + 15 = 30."
           },
           {
             type: "matching",
             question: "Conecta cada multiplicación con su resultado correcto:",
             pairs: [
-              { left: "8 × 7", right: "56" },
-              { left: "9 × 6", right: "54" },
-              { left: "7 × 7", right: "49" },
-              { left: "12 × 5", right: "60" }
+              { left: "6 × 4", right: "24" },
+              { left: "9 × 3", right: "27" },
+              { left: "8 × 5", right: "40" },
+              { left: "7 × 7", right: "49" }
             ],
             explanation: "¡Tablas de multiplicar dominadas!"
           },
           {
             type: "fill_blanks",
-            question: "Si tengo 24 caramelos y los reparto entre 6 amigos a partes iguales, cada amigo recibe ___ caramelos.",
-            blankAnswer: "4",
-            aliases: ["4", "cuatro"],
-            explanation: "24 dividido entre 6 = 4 caramelos para cada uno."
+            question: "Si en una caja hay 6 lápices y tengo 4 cajas iguales, en total tengo ___ lápices.",
+            blankAnswer: "24",
+            aliases: ["24", "veinticuatro"],
+            explanation: "4 cajas × 6 lápices = 24 lápices en total."
           },
           {
             type: "multiple_choice",
-            question: "En una división, si el dividendo es 45 y el divisor es 9, ¿cuál es el cociente?",
-            options: ["5", "4", "6", "9"],
-            answer: "5",
-            explanation: "45 ÷ 9 = 5 exactamente."
+            question: "¿Cuánto es 120 + 80?",
+            options: ["200", "190", "210", "220"],
+            answer: "200",
+            explanation: "120 + 80 = 200. ¡Cálculo mental perfecto!"
           }
         ]
       },
       {
         id: "mat_2",
-        title: "Fracciones y Números Decimales",
-        icon: "🍕",
-        desc: "Equivalencias, partes de la unidad y lectura decimal.",
+        title: "Centenas, Decenas y el Reloj",
+        icon: "⏰",
+        desc: "Números hasta el 1.000, descomposición y lectura de horas.",
         questions: [
           {
             type: "multiple_choice",
-            question: "¿Cuál de estas fracciones es equivalente a 1/2 (la mitad)?",
-            options: ["2/4", "2/3", "3/5", "1/4"],
-            answer: "2/4",
-            explanation: "2/4 es exactamente la mitad, igual que 1/2."
+            question: "En el número 438, ¿cuántas centenas hay?",
+            options: ["4 centenas", "3 centenas", "8 centenas", "40 centenas"],
+            answer: "4 centenas",
+            explanation: "El 4 ocupa la posición de las centenas (4 centenas = 400 unidades)."
           },
           {
             type: "true_false",
-            question: "La fracción 3/5 es mayor que 1/5.",
+            question: "Una hora completa tiene 60 minutos.",
             answer: true,
-            explanation: "¡Exacto! Con el mismo denominador, 3 partes es más que 1 parte."
+            explanation: "¡Exacto! Y media hora tiene 30 minutos."
           },
           {
             type: "matching",
-            question: "Une cada fracción de peso con sus gramos:",
+            question: "Une cada cantidad con sus unidades:",
             pairs: [
-              { left: "Medio kilo", right: "500 g" },
-              { left: "Cuarto de kilo", right: "250 g" },
-              { left: "Tres cuartos de kilo", right: "750 g" },
-              { left: "Un kilo entero", right: "1.000 g" }
+              { left: "3 centenas", right: "300 unidades" },
+              { left: "5 decenas", right: "50 unidades" },
+              { left: "8 decenas", right: "80 unidades" },
+              { left: "1 millar", right: "1.000 unidades" }
             ],
-            explanation: "¡Equivalencias de peso perfectas!"
+            explanation: "¡Descomposición de números impecable!"
           },
           {
             type: "fill_blanks",
-            question: "¿Cuánto es 2/7 + 3/7? Escribe solo el numerador resultante: ___/7",
-            blankAnswer: "5",
-            aliases: ["5", "cinco"],
-            explanation: "Se suman los numeradores (2 + 3 = 5) y se mantiene el denominador 7."
+            question: "Si la aguja corta del reloj señala el 4 y la larga señala el 6, son las cuatro y ___.",
+            blankAnswer: "media",
+            aliases: ["media", "30", "treinta"],
+            explanation: "Cuando la aguja minutera está en el 6 marca 'y media' (30 minutos)."
           },
           {
             type: "multiple_choice",
-            question: "¿Cómo se escribe en número decimal 'tres unidades y cinco décimas'?",
-            options: ["3,5", "3,05", "0,35", "35"],
-            answer: "3,5",
-            explanation: "3 unidades y 5 décimas se escribe 3,5."
+            question: "¿Cuál de estos números es MAYOR que 589?",
+            options: ["602", "579", "499", "588"],
+            answer: "602",
+            explanation: "602 tiene 6 centenas, por lo que es mayor que 589 (que tiene 5 centenas)."
           }
         ]
       },
       {
         id: "mat_3",
-        title: "Geometría y Medidas",
+        title: "Figuras Geométricas y Medidas",
         icon: "📐",
-        desc: "Polígonos, perímetros, ángulos y figuras planas.",
+        desc: "Triángulos, cuadrados, lados, vértices y medidas con la regla.",
         questions: [
           {
             type: "multiple_choice",
-            question: "¿Cuántos lados tiene un polígono llamado hexágono?",
-            options: ["6 lados", "5 lados", "7 lados", "8 lados"],
-            answer: "6 lados",
-            explanation: "El prefijo hexa- significa 6 (6 lados y 6 vértices)."
+            question: "¿Cuántos lados tiene un triángulo?",
+            options: ["3 lados", "4 lados", "5 lados", "2 lados"],
+            answer: "3 lados",
+            explanation: "El triángulo siempre tiene 3 lados y 3 vértices."
           },
           {
             type: "true_false",
-            question: "Un triángulo equilátero tiene sus tres lados exactamente iguales.",
+            question: "Un cuadrado tiene sus 4 lados exactamente de la misma longitud.",
             answer: true,
-            explanation: "¡Correcto! Equilátero = lados iguales."
+            explanation: "¡Muy bien! Los 4 lados del cuadrado son iguales."
           },
           {
             type: "matching",
-            question: "Une cada figura con su número de lados:",
+            question: "Une cada figura con su característica:",
             pairs: [
-              { left: "Triángulo", right: "3 lados" },
-              { left: "Cuadrilátero", right: "4 lados" },
-              { left: "Pentágono", right: "5 lados" },
-              { left: "Octógono", right: "8 lados" }
+              { left: "Triángulo", right: "3 lados y 3 vértices" },
+              { left: "Cuadrado", right: "4 lados iguales" },
+              { left: "Rectángulo", right: "Lados iguales 2 a 2" },
+              { left: "Círculo", right: "Línea curva sin lados rectos" }
             ],
-            explanation: "¡Clasificación geométrica impecable!"
+            explanation: "¡Clasificación geométrica perfecta!"
           },
           {
             type: "fill_blanks",
-            question: "Un cuadrado mide 5 cm en cada lado. Su perímetro total es de ___ cm.",
-            blankAnswer: "20",
-            aliases: ["20", "veinte"],
-            explanation: "El perímetro es la suma de sus 4 lados: 5 + 5 + 5 + 5 = 20 cm."
+            question: "1 metro entero equivale a ___ centímetros.",
+            blankAnswer: "100",
+            aliases: ["100", "cien"],
+            explanation: "1 metro (m) = 100 centímetros (cm)."
           },
           {
             type: "multiple_choice",
-            question: "¿Qué tipo de ángulo mide exactamente 90 grados?",
-            options: ["Ángulo Recto", "Ángulo Agudo", "Ángulo Obtuso", "Ángulo Llano"],
-            answer: "Ángulo Recto",
-            explanation: "El ángulo recto mide exactamente 90º (como la esquina de un libro)."
+            question: "¿Qué instrumento usamos en el estuche del cole para medir centímetros?",
+            options: ["La regla", "La báscula", "El termómetro", "El reloj"],
+            answer: "La regla",
+            explanation: "La regla nos permite medir objetos pequeños en centímetros y milímetros."
           }
         ]
       }
@@ -154,143 +155,143 @@ const CURRICULUM_DATA = {
   lengua: {
     title: "Reino de las Letras",
     icon: "📖",
-    heroDesc: "Acentuación, tipos de palabras, ortografía y vocabulario para dominar la lengua española.",
+    heroDesc: "¡Hola Jimena! Aprende a separar sílabas, los nombres comunes y propios, y las reglas para escribir sin faltas.",
     units: [
       {
         id: "len_1",
-        title: "Reglas de Acentuación",
-        icon: "✍️",
-        desc: "Palabras agudas, llanas y esdrújulas con sus tildes.",
+        title: "Las Sílabas y el Abecedario",
+        icon: "🔤",
+        desc: "Separar sílabas, orden alfabético y signos de puntuación.",
         questions: [
           {
             type: "multiple_choice",
-            question: "¿En qué posición llevan la sílaba tónica (fuerte) las palabras agudas?",
-            options: ["En la última sílaba", "En la penúltima sílaba", "En la antepenúltima sílaba"],
-            answer: "En la última sílaba",
-            explanation: "Las agudas tienen la fuerza en la última sílaba (ej. ba-lón)."
+            question: "¿Cuántas sílabas tiene la palabra 'mariposa' (ma-ri-po-sa)?",
+            options: ["4 sílabas", "3 sílabas", "2 sílabas", "5 sílabas"],
+            answer: "4 sílabas",
+            explanation: "Ma-ri-po-sa tiene 4 golpes de voz o sílabas (es polisílaba)."
           },
           {
             type: "true_false",
-            question: "Las palabras esdrújulas SIEMPRE llevan tilde.",
+            question: "Los nombres propios de personas como 'Jimena' se escriben SIEMPRE con mayúscula inicial.",
             answer: true,
-            explanation: "¡Verdadero! Todas las palabras esdrújulas llevan tilde sin excepción (música, pájaro)."
+            explanation: "¡Verdadero! Todos los nombres propios de personas y lugares empiezan con mayúscula."
           },
           {
             type: "matching",
-            question: "Clasifica cada palabra según su sílaba tónica:",
+            question: "Une cada palabra con su número de sílabas:",
             pairs: [
-              { left: "Camión", right: "Aguda" },
-              { left: "Ventana", right: "Llana" },
-              { left: "Plátano", right: "Esdrújula" },
-              { left: "Compás", right: "Aguda" }
+              { left: "Sol", right: "1 sílaba (Monosílaba)" },
+              { left: "Pe-rro", right: "2 sílabas (Bisílaba)" },
+              { left: "Es-tre-lla", right: "3 sílabas (Trisílaba)" },
+              { left: "Bi-ci-cle-ta", right: "4 sílabas (Polisílaba)" }
             ],
-            explanation: "¡Excelente dominio de las reglas de acentuación!"
+            explanation: "¡Separación silábica impecable!"
           },
           {
             type: "fill_blanks",
-            question: "La palabra 'lámpara' lleva tilde porque su fuerza recae en la antepenúltima sílaba, por tanto es una palabra ___.",
-            blankAnswer: "esdrújula",
-            aliases: ["esdrujula", "esdrújula"],
-            explanation: "Lám-pa-ra es una palabra esdrújula."
+            question: "Para empezar una pregunta en español ponemos el signo ___ y para terminar ponemos ?.",
+            blankAnswer: "¿",
+            aliases: ["¿", "interrogacion", "signo de interrogacion"],
+            explanation: "En español las preguntas se abren con ¿ y se cierran con ?."
           },
           {
             type: "multiple_choice",
-            question: "¿Cuál de estas palabras es LLANA?",
-            options: ["Árbol", "Corazón", "Café", "Semáforo"],
+            question: "¿Qué palabra va PRIMERO según el orden del abecedario?",
+            options: ["Árbol", "Barco", "Casa", "Delfín"],
             answer: "Árbol",
-            explanation: "Ár-bol lleva la fuerza en la penúltima sílaba, por lo que es llana."
+            explanation: "La A es la primera letra del abecedario, así que Árbol va primero."
           }
         ]
       },
       {
         id: "len_2",
-        title: "Gramática y Clases de Palabras",
+        title: "Sustantivos y Adjetivos",
         icon: "🏷️",
-        desc: "Sustantivos, adjetivos, verbos y pronombres.",
+        desc: "Nombres propios y comunes, singular/plural y adjetivos.",
         questions: [
           {
             type: "multiple_choice",
-            question: "En la frase 'El perro cariñoso juega en el parque', ¿cuál es el ADJETIVO?",
-            options: ["Cariñoso", "Perro", "Juega", "Parque"],
-            answer: "Cariñoso",
-            explanation: "'Cariñoso' describe cómo es el perro, por tanto es un adjetivo calificativo."
+            question: "¿Cuál de estas palabras es un nombre PROPIO?",
+            options: ["Jimena", "niña", "colegio", "pelota"],
+            answer: "Jimena",
+            explanation: "'Jimena' es un nombre propio y se escribe con mayúscula."
           },
           {
             type: "true_false",
-            question: "'Correr', 'saltar' y 'estudiar' son verbos en forma infinitivo.",
+            question: "La palabra 'amable' es un adjetivo porque nos dice cómo es una persona.",
             answer: true,
-            explanation: "¡Verdadero! Los infinitivos terminan en -ar, -er o -ir."
+            explanation: "¡Exacto! Los adjetivos explican cómo son las cosas o personas."
           },
           {
             type: "matching",
-            question: "Une cada palabra con su categoría gramatical:",
+            question: "Transforma cada sustantivo de singular a plural:",
             pairs: [
-              { left: "Madrid", right: "Sustantivo propio" },
-              { left: "Brillante", right: "Adjetivo" },
-              { left: "Nosotros", right: "Pronombre" },
-              { left: "Escribir", right: "Verbo" }
+              { left: "El lápiz", right: "Los lápices" },
+              { left: "La flor", right: "Las flores" },
+              { left: "El árbol", right: "Los árboles" },
+              { left: "La canción", right: "Las canciones" }
             ],
-            explanation: "¡Categorías gramaticales identificadas a la perfección!"
+            explanation: "¡Plurales perfectos!"
           },
           {
             type: "fill_blanks",
-            question: "El femenino del sustantivo 'actor' es ___.",
-            blankAnswer: "actriz",
-            aliases: ["actriz", "la actriz"],
-            explanation: "El femenino de actor es actriz."
+            question: "El femenino del sustantivo 'caballo' es la ___.",
+            blankAnswer: "yegua",
+            aliases: ["yegua", "la yegua"],
+            explanation: "El macho es el caballo y la hembra es la yegua."
           },
           {
             type: "multiple_choice",
-            question: "¿Qué tipo de palabra es 'rápido' en la frase 'El coche rápido ganó'?",
-            options: ["Adjetivo", "Sustantivo", "Verbo", "Artículo"],
-            answer: "Adjetivo",
-            explanation: "Indica una cualidad del coche (adjetivo)."
+            question: "¿Cuál es el antónimo (lo contrario) de la palabra 'rápido'?",
+            options: ["Lento", "Veloz", "Ágil", "Fuerte"],
+            answer: "Lento",
+            explanation: "Lo contrario de rápido es lento."
           }
         ]
       },
       {
         id: "len_3",
-        title: "Ortografía y Vocabulario",
+        title: "Ortografía Divertida (C/QU, R/RR y M)",
         icon: "💡",
-        desc: "Sinónimos, antónimos, reglas de la B/V y la H.",
+        desc: "Aprende a escribir sin faltas: M antes de P y B, C y QU, y la R fuerte.",
         questions: [
           {
             type: "multiple_choice",
-            question: "¿Cuál es el SINÓNIMO de la palabra 'feliz'?",
-            options: ["Alegre", "Triste", "Enojado", "Cansado"],
-            answer: "Alegre",
-            explanation: "Feliz y alegre tienen un significado semejante."
+            question: "Delante de las letras P y B, ¿qué letra se escribe SIEMPRE?",
+            options: ["La letra M", "La letra N", "La letra S", "La letra L"],
+            answer: "La letra M",
+            explanation: "¡Regla de oro! Siempre se escribe M antes de P y B (ej. campana, bombero, tambor)."
           },
           {
             type: "true_false",
-            question: "El antónimo (lo contrario) de 'subir' es 'bajar'.",
+            question: "La palabra 'queso' se escribe con QU y no con C.",
             answer: true,
-            explanation: "¡Verdadero! Los antónimos expresan ideas opuestas."
+            explanation: "¡Correcto! Delante de la E y de la I siempre usamos QU (que, qui)."
           },
           {
             type: "matching",
-            question: "Conecta cada palabra con su ANTÓNIMO (opuesto):",
+            question: "Elige si se escribe con C o con QU:",
             pairs: [
-              { left: "Grande", right: "Pequeño" },
-              { left: "Luz", right: "Oscuridad" },
-              { left: "Rápido", right: "Lento" },
-              { left: "Valiente", right: "Cobarde" }
+              { left: "___asa", right: "C (Casa)" },
+              { left: "___eso", right: "QU (Queso)" },
+              { left: "___oche", right: "C (Coche)" },
+              { left: "pa___ete", right: "QU (Paquete)" }
             ],
-            explanation: "¡Gran dominio de vocabulario y antónimos!"
+            explanation: "¡Dominas las reglas de C y QU!"
           },
           {
             type: "fill_blanks",
-            question: "Los verbos terminados en -bir se escriben con b (como escribir), por ejemplo: re___ir.",
-            blankAnswer: "recibir",
-            aliases: ["recibir"],
-            explanation: "Recibir termina en -bir y se escribe con b."
+            question: "Completa la palabra ta___or (instrumento musical): se escribe con m antes de b.",
+            blankAnswer: "mb",
+            aliases: ["mb", "tambor", "m"],
+            explanation: "Tam-bor se escribe con M antes de B."
           },
           {
             type: "multiple_choice",
-            question: "¿Cuál de estas palabras está escrita de forma CORRECTA?",
-            options: ["Habitación", "Abitacion", "Havitación", "Avitación"],
-            answer: "Habitación",
-            explanation: "Habitación se escribe con H inicial, B y tilde en la O."
+            question: "¿Cuál de estas palabras está bien escrita con RR fuerte?",
+            options: ["Perro", "Pero", "Pera", "Para"],
+            answer: "Perro",
+            explanation: "El animal que ladra tiene sonido fuerte entre dos vocales y se escribe con doble r (perro)."
           }
         ]
       }
@@ -298,15 +299,15 @@ const CURRICULUM_DATA = {
   },
 
   ingles: {
-    title: "English Practice 5th Grade",
+    title: "English Practice 3rd Grade",
     icon: "🇬🇧",
-    heroDesc: "Body parts, animals, daily routines and vocabulary with audio pronunciation for Jimena.",
+    heroDesc: "Body parts, animals, colors and easy words with native audio pronunciation for Jimena.",
     units: [
       {
         id: "ing_1",
-        title: "The Human Body & Health",
-        icon: "🦴",
-        desc: "Body parts, actions and health words in English.",
+        title: "My Body & Face",
+        icon: "👧",
+        desc: "Head, arms, legs, eyes, ears, mouth and teeth in English.",
         questions: [
           {
             type: "multiple_choice",
@@ -314,7 +315,7 @@ const CURRICULUM_DATA = {
             options: ["Head", "Hand", "Foot", "Arm"],
             answer: "Head",
             audioText: "Head",
-            explanation: "Head means Cabeza in English!"
+            explanation: "Head means Cabeza in English! Touch your head!"
           },
           {
             type: "true_false",
@@ -327,78 +328,78 @@ const CURRICULUM_DATA = {
             type: "matching",
             question: "Match the English body part with its Spanish meaning:",
             pairs: [
-              { left: "Arm", right: "Brazo" },
-              { left: "Leg", right: "Pierna" },
-              { left: "Hand", right: "Mano" },
-              { left: "Foot", right: "Pie" }
+              { left: "Hands", right: "Manos" },
+              { left: "Legs", right: "Piernas" },
+              { left: "Ears", right: "Orejas" },
+              { left: "Mouth", right: "Boca" }
             ],
             explanation: "Great job! Body parts mastered in English!"
           },
           {
             type: "fill_blanks",
-            question: "Complete the sentence: 'I see with my ___ (eyes / ears).'",
+            question: "Complete the sentence: 'I have two ___ on my face to see.'",
             blankAnswer: "eyes",
-            aliases: ["eyes", "my eyes"],
-            audioText: "I see with my eyes.",
-            explanation: "We see with our eyes and listen with our ears."
+            aliases: ["eyes", "eye"],
+            audioText: "I have two eyes on my face to see.",
+            explanation: "Eyes = ojos."
           },
           {
             type: "multiple_choice",
-            question: "Which of these body parts is on your leg?",
-            options: ["Knee (Rodilla)", "Elbow (Codo)", "Nose (Nariz)", "Ear (Oreja)"],
-            answer: "Knee (Rodilla)",
-            audioText: "Knee",
-            explanation: "The knee is in the middle of your leg."
+            question: "How do you say 'Dientes' in English?",
+            options: ["Teeth", "Toes", "Fingers", "Nose"],
+            answer: "Teeth",
+            audioText: "Teeth",
+            explanation: "Teeth = dientes. Remember to brush your teeth!"
           }
         ]
       },
       {
         id: "ing_2",
-        title: "Animals & Nature",
+        title: "Animals & Colors",
         icon: "🦁",
-        desc: "Animals, habitats and friendly descriptive sentences.",
+        desc: "Pets, wild animals and the colors of the rainbow.",
         questions: [
           {
             type: "multiple_choice",
-            question: "What animal says 'Woof' and is known as human's best friend?",
-            options: ["Dog", "Cat", "Bird", "Horse"],
+            question: "What animal says 'Woof woof'?",
+            options: ["Dog", "Cat", "Cow", "Duck"],
             answer: "Dog",
             audioText: "Dog",
-            explanation: "Dog is a loyal friend!"
+            explanation: "A dog says woof woof! Dog = perro."
           },
           {
             type: "true_false",
-            question: "A dolphin lives in the ocean and is a mammal.",
+            question: "An elephant is a very big animal and its color is grey.",
             answer: true,
-            audioText: "A dolphin lives in the ocean.",
-            explanation: "True! Dolphins are clever sea mammals."
+            audioText: "An elephant is a very big animal.",
+            explanation: "True! Elephants are big and grey."
           },
           {
             type: "matching",
             question: "Match each animal with its Spanish name:",
             pairs: [
-              { left: "Lion", right: "León" },
-              { left: "Bear", right: "Oso" },
-              { left: "Eagle", right: "Águila" },
-              { left: "Shark", right: "Tiburón" }
+              { left: "Cat", right: "Gato" },
+              { left: "Bird", right: "Pájaro" },
+              { left: "Fish", right: "Pez" },
+              { left: "Horse", right: "Caballo" }
             ],
             explanation: "Super animal vocabulary!"
           },
           {
             type: "fill_blanks",
-            question: "Complete: 'She ___ (likes / like) playing with her cat.'",
-            blankAnswer: "likes",
-            aliases: ["likes"],
-            audioText: "She likes playing with her cat.",
-            explanation: "In Present Simple with 'she', we add -s to the verb (likes)."
+            question: "The color of the sky and the ocean on a sunny day is ___.",
+            blankAnswer: "blue",
+            aliases: ["blue", "azul"],
+            audioText: "The color of the sky is blue.",
+            explanation: "Blue = azul."
           },
           {
             type: "multiple_choice",
-            question: "What color is the grass (hierba) in nature?",
-            options: ["Green", "Blue", "Red", "Pink"],
-            answer: "Green",
-            audioText: "Green",
-            explanation: "Grass is bright green!"
+            question: "What color do you get if you mix Red and Yellow?",
+            options: ["Orange", "Green", "Purple", "Pink"],
+            answer: "Orange",
+            audioText: "Orange",
+            explanation: "Red + Yellow = Orange (Naranja)!"
           }
         ]
       }
@@ -421,7 +422,7 @@ const BestKidsGamification = {
   // Títulos por Nivel
   levelTitles: [
     { level: 1, title: "Estudiante Novata", minXP: 0 },
-    { level: 2, title: "Exploradora de 5º", minXP: 500 },
+    { level: 2, title: "Exploradora de 3º", minXP: 500 },
     { level: 3, title: "Ninja del Estudio", minXP: 1200 },
     { level: 4, title: "Científica Maestra 3D", minXP: 2200 },
     { level: 5, title: "Leyenda Escolar", minXP: 3500 }

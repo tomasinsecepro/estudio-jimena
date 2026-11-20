@@ -1,6 +1,6 @@
 /**
  * El Cuaderno de Estudio de Jimena - 3D Interactivo Hiperrealista
- * Conocimiento del Medio 5º de Primaria
+ * Conocimiento del Medio 3º de Primaria (8 años)
  */
 
 // --- Base de Datos Anatómica y Puntos Clave ---
