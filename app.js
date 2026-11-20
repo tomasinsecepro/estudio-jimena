@@ -699,6 +699,11 @@ class Anatomy3DEngine {
       if (loadingText) {
         loadingText.innerText = `Cargando 3D interactivo (${loadedCount}/${totalToLoad})...`;
       }
+      // Si el modelo de Jimena (pantalla inicial) ya está listo, mostramos la escena de inmediato sin hacer esperar
+      if (name === 'persona' && overlay && AppState.currentLayer === 'persona') {
+        overlay.classList.add('hidden');
+        this.updateLayerVisibility('persona');
+      }
       if (loadedCount >= totalToLoad && overlay) {
         overlay.classList.add('hidden');
         this.updateLayerVisibility(AppState.currentLayer);
