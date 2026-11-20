@@ -594,17 +594,21 @@ class Anatomy3DEngine {
     this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
     this.camera.position.set(0, 12, 225);
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    // WebGL optimizado: bajo consumo de energía para evitar calentamiento y ventiladores
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: 'default'
+    });
     this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    this.renderer.shadowMap.enabled = false; // Sin sombras dinámicas redundantes (usa plano de sombra estático)
     this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.container.appendChild(this.renderer.domElement);
 
     this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.06;
+    this.controls.dampingFactor = 0.08;
     this.controls.minDistance = 25;
     this.controls.maxDistance = 450;
     this.controls.maxPolarAngle = Math.PI / 1.05;
@@ -613,6 +617,10 @@ class Anatomy3DEngine {
       ONE: THREE.TOUCH.ROTATE,
       TWO: THREE.TOUCH.DOLLY_PAN
     };
+
+    // Render-On-Demand: renderiza solo cuando hay interacción real
+    this.renderRemainingFrames = 60;
+    this.controls.addEventListener('change', () => this.requestRender(15));
 
     // Previene scroll vertical no deseado al interactuar con el 3D
     this.renderer.domElement.style.touchAction = 'none';
@@ -685,103 +693,105 @@ class Anatomy3DEngine {
     const overlay = document.getElementById('loading-overlay');
     const loadingText = document.getElementById('loading-text');
 
-    const bodyConfigs = [
-      { key: 'persona', path: 'models/jimena.glb', targetHeight: 150, offsetY: 0 },
-      { key: 'huesos', path: 'models/skeleton.glb', targetHeight: 150, offsetY: 0, materialType: 'bone' },
-      { key: 'musculos', path: 'models/muscles.glb', targetHeight: 150, offsetY: 0, materialType: 'muscle' }
-    ];
-
-    let loadedCount = 0;
-    const totalToLoad = bodyConfigs.length + 2;
-
-    const onAssetLoaded = (name) => {
-      loadedCount++;
-      if (loadingText) {
-        loadingText.innerText = `Cargando 3D interactivo (${loadedCount}/${totalToLoad})...`;
-      }
-      // Si el modelo de Jimena (pantalla inicial) ya está listo, mostramos la escena de inmediato sin hacer esperar
-      if (name === 'persona' && overlay && AppState.currentLayer === 'persona') {
-        overlay.classList.add('hidden');
-        this.updateLayerVisibility('persona');
-      }
-      if (loadedCount >= totalToLoad && overlay) {
-        overlay.classList.add('hidden');
-        this.updateLayerVisibility(AppState.currentLayer);
-      }
-    };
-
-    bodyConfigs.forEach(cfg => {
-      this.loader.load(
-        cfg.path,
-        (gltf) => {
-          const model = gltf.scene;
-          const bbox = new THREE.Box3().setFromObject(model);
-          const size = bbox.getSize(new THREE.Vector3());
-          const center = bbox.getCenter(new THREE.Vector3());
-
-          const scaleFactor = cfg.targetHeight / (size.y || 1);
-          model.scale.set(scaleFactor, scaleFactor, scaleFactor);
-
-          model.position.x = -center.x * scaleFactor;
-          model.position.y = -center.y * scaleFactor + cfg.offsetY;
-          model.position.z = -center.z * scaleFactor;
-
-          if (cfg.key === 'persona') {
-            model.traverse((child) => {
-              if (child.isMesh && child.material) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-                // Acabado mate fotográfico sin brillos plásticos excesivos
-                child.material.roughness = Math.max(0.65, child.material.roughness || 0.65);
-                child.material.metalness = Math.min(0.05, child.material.metalness || 0.0);
-                if (child.material.map) {
-                  child.material.map.encoding = THREE.sRGBEncoding;
-                  child.material.map.needsUpdate = true;
-                }
-              }
-            });
-            this.models.persona = model;
-            this.scene.add(model);
-          } else if (cfg.key === 'musculos') {
-            // Músculos Delanteros: Solo en rojo los 5 delanteros preguntados
-            this.models.musculos_del = model;
-            this.applySelectiveMuscles(this.models.musculos_del, 'delanteros');
-
-            // Músculos Traseros: Solo en rojo los 5 traseros preguntados
-            this.models.musculos_tras = model.clone();
-            this.applySelectiveMuscles(this.models.musculos_tras, 'traseros');
-
-            this.scene.add(this.models.musculos_del);
-            this.scene.add(this.models.musculos_tras);
-          } else {
-            this.applyBodyMaterials(model, cfg.materialType);
-            this.models[cfg.key] = model;
-            this.scene.add(model);
-          }
-
-          onAssetLoaded(cfg.key);
-        },
-        (xhr) => {
-          if (xhr.lengthComputable && cfg.key === 'persona' && loadingText) {
-            const percent = Math.round((xhr.loaded / xhr.total) * 100);
-            loadingText.innerText = `Cargando el modelo 3D de Jimena (${percent}%)...`;
-          }
-        },
-        (err) => {
-          console.warn("Fallo cargando " + cfg.path, err);
-          onAssetLoaded(cfg.key);
-        }
-      );
-    });
-
-    // 3. Placas 3D de estudio anatómico con los cortes fieles del libro
+    // 1. Placas 3D de ojo y oido (se construyen de inmediato con texturas 2D)
     this.models.ojo = this.createAnatomyPlate('models/eye_diagram.jpg', 75, 56);
     this.scene.add(this.models.ojo);
-    onAssetLoaded('ojo');
-
     this.models.oido = this.createAnatomyPlate('models/ear_diagram.jpg', 75, 56);
     this.scene.add(this.models.oido);
-    onAssetLoaded('oido');
+
+    // 2. Cargar primero el modelo 3D de Jimena (ultra-ligero: solo 2MB)
+    this.loader.load(
+      'models/jimena.glb',
+      (gltf) => {
+        const model = gltf.scene;
+        const bbox = new THREE.Box3().setFromObject(model);
+        const size = bbox.getSize(new THREE.Vector3());
+        const center = bbox.getCenter(new THREE.Vector3());
+
+        const scaleFactor = 150 / (size.y || 1);
+        model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+        model.position.x = -center.x * scaleFactor;
+        model.position.y = -center.y * scaleFactor;
+        model.position.z = -center.z * scaleFactor;
+
+        model.traverse((child) => {
+          if (child.isMesh && child.material) {
+            child.material.roughness = Math.max(0.65, child.material.roughness || 0.65);
+            child.material.metalness = Math.min(0.05, child.material.metalness || 0.0);
+            if (child.material.map) {
+              child.material.map.encoding = THREE.sRGBEncoding;
+              child.material.map.needsUpdate = true;
+            }
+          }
+        });
+
+        this.models.persona = model;
+        this.scene.add(model);
+
+        // Pantalla de carga fuera al instante para visualización inmediata
+        if (overlay) overlay.classList.add('hidden');
+        this.updateLayerVisibility('persona');
+        this.requestRender(60);
+
+        // 3. Carga diferida en segundo plano de esqueletos y músculos (no congelan el inicio)
+        setTimeout(() => this.loadSecondaryModels(), 250);
+      },
+      (xhr) => {
+        if (xhr.lengthComputable && loadingText) {
+          const percent = Math.round((xhr.loaded / xhr.total) * 100);
+          loadingText.innerText = `Cargando a Jimena 3D (${percent}%)...`;
+        }
+      },
+      (err) => {
+        console.warn("Fallo cargando jimena.glb", err);
+        if (overlay) overlay.classList.add('hidden');
+      }
+    );
+  }
+
+  loadSecondaryModels() {
+    // Huesos (optimizado a 3.2MB)
+    this.loader.load('models/skeleton.glb', (gltf) => {
+      const model = gltf.scene;
+      const bbox = new THREE.Box3().setFromObject(model);
+      const size = bbox.getSize(new THREE.Vector3());
+      const center = bbox.getCenter(new THREE.Vector3());
+      const scaleFactor = 150 / (size.y || 1);
+      model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+      model.position.x = -center.x * scaleFactor;
+      model.position.y = -center.y * scaleFactor;
+      model.position.z = -center.z * scaleFactor;
+      this.applyBodyMaterials(model, 'bone');
+      this.models.huesos = model;
+      model.visible = (AppState.currentLayer === 'huesos');
+      this.scene.add(model);
+      this.requestRender(30);
+    });
+
+    // Músculos (optimizado a 2.8MB)
+    this.loader.load('models/muscles.glb', (gltf) => {
+      const model = gltf.scene;
+      const bbox = new THREE.Box3().setFromObject(model);
+      const size = bbox.getSize(new THREE.Vector3());
+      const center = bbox.getCenter(new THREE.Vector3());
+      const scaleFactor = 150 / (size.y || 1);
+      model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+      model.position.x = -center.x * scaleFactor;
+      model.position.y = -center.y * scaleFactor;
+      model.position.z = -center.z * scaleFactor;
+
+      this.models.musculos_del = model;
+      this.applySelectiveMuscles(this.models.musculos_del, 'delanteros');
+      this.models.musculos_del.visible = (AppState.currentLayer === 'musculos_del');
+
+      this.models.musculos_tras = model.clone();
+      this.applySelectiveMuscles(this.models.musculos_tras, 'traseros');
+      this.models.musculos_tras.visible = (AppState.currentLayer === 'musculos_tras');
+
+      this.scene.add(this.models.musculos_del);
+      this.scene.add(this.models.musculos_tras);
+      this.requestRender(30);
+    });
   }
 
   // Coloreado selectivo: SOLO en rojo vivo los músculos que se preguntan
@@ -908,11 +918,13 @@ class Anatomy3DEngine {
       this.camera.position.lerpVectors(startPos, endPos, ease);
       this.controls.target.lerpVectors(startTarget, endTarget, ease);
       this.controls.update();
+      this.requestRender(10);
 
       if (progress < 1) {
         requestAnimationFrame(animateTransition);
       } else {
         this.isTransitioning = false;
+        this.requestRender(20);
       }
     };
     requestAnimationFrame(animateTransition);
@@ -934,8 +946,10 @@ class Anatomy3DEngine {
           const origColor = child.userData.origColor || child.material.color.getHex();
           child.userData.origColor = origColor;
           child.material.color.setHex(0x10b981);
+          this.requestRender(45);
           setTimeout(() => {
             if (child.material) child.material.color.setHex(origColor);
+            this.requestRender(20);
           }, 1500);
         }
       }
@@ -953,7 +967,6 @@ class Anatomy3DEngine {
 
     const intersects = this.raycaster.intersectObjects(currentModel.children, true);
     if (intersects.length > 0) {
-      // Si la pieza 3D tiene directamente asignada su parte anatómica (Cuerpo de Jimena)
       if (intersects[0].object.userData && intersects[0].object.userData.partId) {
         focusInputCard(intersects[0].object.userData.partId);
         return;
@@ -984,6 +997,7 @@ class Anatomy3DEngine {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+    this.requestRender(20);
   }
 
   toScreenPosition(vector3D) {
@@ -1000,20 +1014,37 @@ class Anatomy3DEngine {
     };
   }
 
+  requestRender(frames = 30) {
+    this.renderRemainingFrames = Math.max(this.renderRemainingFrames || 0, frames);
+  }
+
   animate() {
     requestAnimationFrame(() => this.animate());
 
+    // Si la pestaña está oculta o el usuario está en otra asignatura, consumo de CPU/GPU = 0
+    if (document.hidden || AppState.currentSubject !== 'ciencias') {
+      return;
+    }
+
+    const needsActiveRender = AppState.autoRotate || this.isTransitioning || (this.renderRemainingFrames > 0);
+
     if (AppState.autoRotate && !this.isTransitioning) {
       this.controls.autoRotate = true;
-      this.controls.autoRotateSpeed = 2.0;
+      this.controls.autoRotateSpeed = 1.8;
     } else {
       this.controls.autoRotate = false;
     }
 
-    this.controls.update();
-    this.renderer.render(this.scene, this.camera);
+    // Render-On-Demand: renderiza exclusivamente cuando la cámara o el modelo se mueven
+    if (needsActiveRender) {
+      this.controls.update();
+      this.renderer.render(this.scene, this.camera);
+      updateCalloutLinesAndMarkers();
 
-    updateCalloutLinesAndMarkers();
+      if (this.renderRemainingFrames > 0) {
+        this.renderRemainingFrames--;
+      }
+    }
   }
 }
 
@@ -1134,6 +1165,10 @@ function updateCalloutLinesAndMarkers() {
   const solvedList = AppState.solvedItems[currentLayer] || [];
   let svgLines = '';
 
+  const stageWrapper = document.getElementById('stage-wrapper');
+  if (!stageWrapper) return;
+  const stageRect = stageWrapper.getBoundingClientRect();
+
   layerData.items.forEach(item => {
     const screenPos = engine3D.toScreenPosition(item.anchor3D);
     const marker = document.getElementById(`marker-${item.id}`);
@@ -1152,7 +1187,6 @@ function updateCalloutLinesAndMarkers() {
     // En pantallas de móvil no trazamos líneas diagonales para mantener la interfaz limpia
     if (!isMobile && card && marker && marker.style.display !== 'none') {
       const cardRect = card.getBoundingClientRect();
-      const stageRect = document.getElementById('stage-wrapper').getBoundingClientRect();
 
       let cardX = (item.side === 'left') ? (cardRect.right - stageRect.left) : (cardRect.left - stageRect.left);
       let cardY = cardRect.top - stageRect.top + cardRect.height / 2;
@@ -1503,10 +1537,30 @@ function setupEventListeners() {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      document.getElementById('view-ciencias').style.display = (subject === 'ciencias') ? 'flex' : 'none';
-      document.querySelectorAll('.subject-page').forEach(page => page.classList.remove('active'));
+      AppState.currentSubject = subject;
+      const viewCiencias = document.getElementById('view-ciencias');
 
-      if (subject !== 'ciencias') {
+      if (subject === 'ciencias') {
+        if (viewCiencias) {
+          viewCiencias.classList.add('active');
+          viewCiencias.style.display = 'flex';
+        }
+        document.querySelectorAll('.subject-page').forEach(page => page.classList.remove('active'));
+
+        if (engine3D) {
+          setTimeout(() => {
+            engine3D.onWindowResize();
+            engine3D.requestRender(60);
+            updateCalloutLinesAndMarkers();
+          }, 40);
+        }
+      } else {
+        if (viewCiencias) {
+          viewCiencias.classList.remove('active');
+          viewCiencias.style.display = 'none';
+        }
+        document.querySelectorAll('.subject-page').forEach(page => page.classList.remove('active'));
+
         const targetView = document.getElementById(`view-${subject}`);
         if (targetView) targetView.classList.add('active');
 
@@ -1581,6 +1635,7 @@ function setupEventListeners() {
   document.getElementById('btn-cam-rotate').addEventListener('click', function () {
     AppState.autoRotate = !AppState.autoRotate;
     this.classList.toggle('active', AppState.autoRotate);
+    if (engine3D) engine3D.requestRender(60);
   });
 
   document.getElementById('btn-cam-front').addEventListener('click', () => {
@@ -1608,6 +1663,7 @@ function setupEventListeners() {
     if (engine3D) {
       engine3D.camera.position.multiplyScalar(0.85);
       engine3D.controls.update();
+      engine3D.requestRender(30);
     }
   });
 
@@ -1615,6 +1671,7 @@ function setupEventListeners() {
     if (engine3D) {
       engine3D.camera.position.multiplyScalar(1.15);
       engine3D.controls.update();
+      engine3D.requestRender(30);
     }
   });
 
