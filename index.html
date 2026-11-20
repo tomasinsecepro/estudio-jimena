@@ -32,18 +32,18 @@
       </button>
       <button class="tab-btn" data-subject="matematicas">
         <span>📐</span> Matemáticas
-        <span class="tab-badge-future">Próximamente</span>
+        <span class="layer-counter" id="badge-count-matematicas">0/3</span>
       </button>
       <button class="tab-btn" data-subject="lengua">
         <span>📖</span> Lengua
-        <span class="tab-badge-future">Próximamente</span>
+        <span class="layer-counter" id="badge-count-lengua">0/3</span>
       </button>
       <button class="tab-btn" data-subject="ingles">
         <span>🇬🇧</span> Inglés
-        <span class="tab-badge-future">Próximamente</span>
+        <span class="layer-counter" id="badge-count-ingles">0/2</span>
       </button>
       <button class="tab-btn" data-subject="medallas">
-        <span>🏆</span> Mis Medallas
+        <span>🏆</span> Vitrina y Tienda
       </button>
     </nav>
 
@@ -97,6 +97,7 @@
         <div class="layer-controls">
           <div class="mode-toggle-group">
             <button class="mode-toggle-btn active" id="btn-mode-quiz">✍️ Modo Escribir</button>
+            <button class="mode-toggle-btn" id="btn-mode-test">🎯 Test Rápido</button>
             <button class="mode-toggle-btn" id="btn-mode-study">📖 Modo Estudiar</button>
           </div>
           <button class="btn-reset-layer" id="btn-reset-layer" title="Reiniciar el progreso de esta lámina a 0">
@@ -340,11 +341,35 @@
     </div>
   </div>
 
+  <!-- Exercise Runner Modal (BestKids Gamified Mode) -->
+  <div class="exercise-modal-overlay" id="exercise-modal">
+    <div class="exercise-modal-container">
+      <div class="exercise-header">
+        <div class="exercise-header-meta">
+          <span class="exercise-subject-tag" id="ex-subject-tag">📐 Matemáticas</span>
+          <h3 class="exercise-unit-title" id="ex-unit-title">Unidad 1</h3>
+        </div>
+        <div class="exercise-progress-dots" id="ex-progress-dots"></div>
+        <button class="btn-close-exercise" id="btn-close-exercise" onclick="ExerciseRunner.close()">✕</button>
+      </div>
+
+      <div class="exercise-body" id="exercise-body">
+        <!-- Rendered dynamically by ExerciseRunner -->
+      </div>
+
+      <div class="exercise-footer" id="exercise-footer">
+        <div class="feedback-msg" id="feedback-msg"></div>
+        <button class="btn-next-exercise" id="btn-next-exercise" style="display: none;">Siguiente Reto ➜</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Local Libraries for Offline 3D & Confetti -->
   <script src="libs/three.min.js"></script>
   <script src="libs/OrbitControls.js"></script>
   <script src="libs/GLTFLoader.js"></script>
   <script src="libs/confetti.min.js"></script>
+  <script src="curriculum.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

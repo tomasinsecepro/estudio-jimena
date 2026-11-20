@@ -1052,6 +1052,20 @@ function renderLayerCards() {
         </div>
         <div class="card-desc">${item.desc}</div>
       `;
+    } else if (AppState.studyMode === 'test') {
+      const options = getAnatomyTestOptions(item, currentLayer);
+      contentHtml += `
+        <div class="card-test-prompt">¿Cuál es su nombre?</div>
+        <div class="card-test-options">
+          ${options.map((opt, idx) => `
+            <button class="btn-test-opt opt-color-${idx % 4}" onclick="checkTestAnswer('${item.id}', '${opt.replace(/'/g, "\\'")}')">
+              <span class="test-opt-letter">${['A', 'B', 'C', 'D'][idx]}</span>
+              <span class="test-opt-text">${opt}</span>
+            </button>
+          `).join('')}
+        </div>
+        <div class="card-hint-text" id="hint-text-${item.id}" style="display:none;"></div>
+      `;
     } else {
       contentHtml += `
         <div class="card-input-row">
@@ -1185,6 +1199,81 @@ function focusInputCard(itemId) {
   }
 }
 
+// --- Opciones y comprobación de Test Rápido anatómico ---
+function getAnatomyTestOptions(currentItem, currentLayer) {
+  const allItems = ANATOMY_DATA[currentLayer].items;
+  let distractors = allItems
+    .filter(i => i.id !== currentItem.id)
+    .map(i => i.name);
+
+  const fallbackNames = ["Cráneo", "Húmero", "Bíceps", "Fémur", "Tríceps", "Costillas", "Pectoral", "Retina", "Tímpano", "Clavícula", "Esternón"];
+  distractors.push(...fallbackNames.filter(n => n !== currentItem.name && !distractors.includes(n)));
+
+  // Barajar distractores
+  for (let i = distractors.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [distractors[i], distractors[j]] = [distractors[j], distractors[i]];
+  }
+
+  // Tomar 3 distractores + la respuesta correcta
+  const chosen = distractors.slice(0, 3);
+  const options = [...chosen, currentItem.name];
+
+  // Barajar opciones finales
+  for (let i = options.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [options[i], options[j]] = [options[j], options[i]];
+  }
+
+  return options;
+}
+
+function checkTestAnswer(itemId, selectedName) {
+  const layerData = ANATOMY_DATA[AppState.currentLayer];
+  const item = layerData.items.find(i => i.id === itemId);
+  const card = document.getElementById(`card-${itemId}`);
+  if (!item) return;
+
+  if (selectedName === item.name) {
+    if (!AppState.solvedItems[AppState.currentLayer]) {
+      AppState.solvedItems[AppState.currentLayer] = [];
+    }
+    if (!AppState.solvedItems[AppState.currentLayer].includes(itemId)) {
+      AppState.solvedItems[AppState.currentLayer].push(itemId);
+      const streakMult = (typeof BestKidsGamification !== 'undefined') ? BestKidsGamification.getStreakMultiplier() : 1;
+      const points = Math.round(10 * streakMult);
+      AppState.score += points;
+      saveProgress();
+      if (typeof updateGamificationHeader === 'function') updateGamificationHeader();
+    }
+
+    if (engine3D) {
+      engine3D.highlightPart(itemId);
+    }
+
+    audio.playSuccessChime();
+    if (card) triggerMiniConfetti(card);
+
+    showToast(`¡Muy bien hecho, Jimena! 🎉 Has acertado: ${item.name}`);
+    audio.speak(`¡Muy bien hecho, Jimena! Es ${item.name}.`);
+
+    renderLayerCards();
+    checkLayerCompletion();
+  } else {
+    if (card) {
+      card.classList.add('shake');
+      setTimeout(() => card.classList.remove('shake'), 500);
+    }
+    audio.playWrongSound();
+
+    const hintEl = document.getElementById(`hint-text-${itemId}`);
+    if (hintEl) {
+      hintEl.innerText = `❌ No es ${selectedName}. ¡Prueba con otra opción!`;
+      hintEl.style.display = 'block';
+    }
+  }
+}
+
 function checkCardAnswer(itemId) {
   const card = document.getElementById(`card-${itemId}`);
   if (!card) return;
@@ -1197,9 +1286,17 @@ function checkCardAnswer(itemId) {
   if (!item) return;
 
   if (isAnswerCorrect(val, item)) {
-    AppState.solvedItems[AppState.currentLayer].push(itemId);
-    AppState.score += 10;
-    saveProgress();
+    if (!AppState.solvedItems[AppState.currentLayer]) {
+      AppState.solvedItems[AppState.currentLayer] = [];
+    }
+    if (!AppState.solvedItems[AppState.currentLayer].includes(itemId)) {
+      AppState.solvedItems[AppState.currentLayer].push(itemId);
+      const streakMult = (typeof BestKidsGamification !== 'undefined') ? BestKidsGamification.getStreakMultiplier() : 1;
+      const points = Math.round(10 * streakMult);
+      AppState.score += points;
+      saveProgress();
+      if (typeof updateGamificationHeader === 'function') updateGamificationHeader();
+    }
 
     if (engine3D) {
       engine3D.highlightPart(itemId);
@@ -1407,6 +1504,12 @@ function setupEventListeners() {
       if (subject !== 'ciencias') {
         const targetView = document.getElementById(`view-${subject}`);
         if (targetView) targetView.classList.add('active');
+
+        if (['matematicas', 'lengua', 'ingles'].includes(subject) && typeof renderSubjectHub === 'function') {
+          renderSubjectHub(subject);
+        } else if (subject === 'medallas' && typeof renderTrophiesAndShop === 'function') {
+          renderTrophiesAndShop();
+        }
       }
     });
   });
@@ -1426,16 +1529,31 @@ function setupEventListeners() {
   });
 
   const btnQuiz = document.getElementById('btn-mode-quiz');
+  const btnTest = document.getElementById('btn-mode-test');
   const btnStudy = document.getElementById('btn-mode-study');
+
   btnQuiz.addEventListener('click', () => {
     btnQuiz.classList.add('active');
+    if (btnTest) btnTest.classList.remove('active');
     btnStudy.classList.remove('active');
     AppState.studyMode = 'quiz';
     renderLayerCards();
   });
+
+  if (btnTest) {
+    btnTest.addEventListener('click', () => {
+      btnTest.classList.add('active');
+      btnQuiz.classList.remove('active');
+      btnStudy.classList.remove('active');
+      AppState.studyMode = 'test';
+      renderLayerCards();
+    });
+  }
+
   btnStudy.addEventListener('click', () => {
     btnStudy.classList.add('active');
     btnQuiz.classList.remove('active');
+    if (btnTest) btnTest.classList.remove('active');
     AppState.studyMode = 'study';
     renderLayerCards();
   });

@@ -35,6 +35,7 @@ async function deploy() {
     'index.html',
     'style.css',
     'app.js',
+    'curriculum.js',
     'server.js',
     'package.json',
     'package-lock.json',
@@ -85,39 +86,13 @@ async function deploy() {
   const vmOutput = runOnVM(vmDeployScript, true);
   console.log(vmOutput);
 
-  console.log('=== Paso 5: Configurando Nginx y SSL en el servidor principal ===');
+  console.log('=== Paso 5: Verificando Nginx en el hipervisor ===');
   const hypNginxScript = `
-echo 1ns3c32ooE | su - root -c '
-cat << "EOF" > /etc/nginx/sites-available/estudio.insece.app
-server {
-    server_name estudio.insece.app;
-
-    location / {
-        proxy_pass http://192.168.1.105:3085;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-
-    listen 80;
-}
-EOF
-
-ln -sf /etc/nginx/sites-available/estudio.insece.app /etc/nginx/sites-enabled/estudio.insece.app
-nginx -t
-systemctl reload nginx
-echo ">>> Nginx recargado correctamente para estudio.insece.app"
-
-echo ">>> Obteniendo certificado SSL Let'\''s Encrypt..."
-certbot --nginx -d estudio.insece.app --non-interactive --agree-tos --redirect || echo "Certbot ya configurado o con advertencia"
-systemctl reload nginx
-echo ">>> SSL configurado con éxito"
-'
+su - << 'EOSU'
+1ns3c32ooE
+nginx -t && systemctl reload nginx
+echo "NGINX_RELOADED_OK"
+EOSU
   `;
   const hypOutput = runOnHypervisor(hypNginxScript);
   console.log(hypOutput);
